@@ -24,10 +24,10 @@ def process_image(image_path):
 
     h = image.height
     w = image.width
-    image = image.crop(((w - target_size) / 2,
-                        (h - target_size) / 2,
-                        (w + target_size) / 2,
-                        (h + target_size) / 2))
+    image = image.crop(((w - target_size) // 2,
+                        (h - target_size) // 2,
+                        (w + target_size) // 2,
+                        (h + target_size) // 2))
 
     np_image = np.array(image) / 255
 

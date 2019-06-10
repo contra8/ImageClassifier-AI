@@ -46,8 +46,8 @@ def predict(image_path, model, topk, device):
     probability = F.softmax(output, dim=1)
     
     probs, indices = probability.topk(topk)
-    probs = probs.to(device).numpy()[0]
-    indices  = indices.to(device).numpy()[0]
+    probs = probs.cpu().numpy()[0]
+    indices  = indices.cpu().numpy()[0]
 
     idx_to_class = {v:k for k, v in model.class_to_idx.items()}
     classes = [idx_to_class[x] for x in indices]
@@ -59,7 +59,7 @@ def predict(image_path, model, topk, device):
     return probs, classes
 
 def show_prediction(img_path, model, topk, json, device):
-    cat_to_name = load_json(json)
+    cat_to_name = load_json(json)[0]
     #print(cat_to_name)
     #print(cat_to_name["42"])
     probabilities, indices_of_flowers = predict(img_path, model, topk, device)

@@ -18,18 +18,18 @@ def main():
         exit()
         
     train_args = get_input_args()
-    cat_to_name = load_json('cat_to_name.json')
+    cat_to_name, output_layer_size = load_json('cat_to_name.json')
     device = get_device(train_args.gpu);
-    model, optimizer, criterion = create_model(device, train_args.arch, 0.2, train_args.hidden_units, train_args.learning_rate)
+    model, optimizer, criterion = create_model(device, train_args.arch, 0.2, train_args.hidden_units, train_args.learning_rate, output_layer_size)
     model = train_the_model(model, train_args.epochs, data_sets[0], data_sets[1], device, optimizer, criterion)
     test_the_model(model, data_sets[2], device)
-    save_checkpoint(model, train_args.arch, train_args.hidden_units, data_sets[3])
+    save_checkpoint(model, train_args.arch, train_args.hidden_units, data_sets[3], train_args.save_dir)
 
 def get_input_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('images_directory', type=str, help='The path to images for training')
-    parser.add_argument('--save_dir', type=str, default='prediction/', help='Path to the folder to save the prediction')
-    parser.add_argument('--arch', type=str, default='vgg16', help='Type of deep learning model')
+    parser.add_argument('--save_dir', type=str, default='prediction/checkpoint.pth', help='Path to the directory and file to save the checkpoint. Default: prediction/checkpoint.pth')
+    parser.add_argument('--arch', type=str, default='vgg16', help='Type of deep learning model. Supported are vgg16 (default) and densenet121.')
     parser.add_argument('--learning_rate', type=float, default='0.001', help='The learning rate')
     parser.add_argument('--hidden_units', type=int, default='5000', help='Number of units in hidden layer')
     parser.add_argument('--epochs', type=int, default='3', help='Name of epochs')
@@ -133,13 +133,13 @@ def test_the_model(model, test_loader, device):
 
     print('Accuracy: %d %%'% (100 * num_correct / num_total))
 
-def save_checkpoint(model, arch, hidden_units, train_dataset):
+def save_checkpoint(model, arch, hidden_units, train_dataset, save_path):
     model.class_to_idx = train_dataset.class_to_idx
     torch.save({'structure': arch,
                 'hidden_layer1': hidden_units,
                 'state_dict': model.state_dict(),
                 'class_to_idx': model.class_to_idx},
-                'checkpoint.pth')
+                save_path)
 
 if __name__ == "__main__":
     main()
